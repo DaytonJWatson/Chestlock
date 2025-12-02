@@ -13,7 +13,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.watsonllc.chestlock.Utils;
 import com.watsonllc.chestlock.config.Config;
-import com.watsonllc.chestlock.logic.PlayerStateManager;
 
 public class IntrusionAlert implements Listener {
 	

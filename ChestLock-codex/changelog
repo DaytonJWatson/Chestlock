@@ -1,1 +1,1 @@
-fixed locks being created if another plugin cancelled the blockplace event
+completely blocks hoppers now, fuckin took long enough
