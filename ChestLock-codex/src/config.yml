@@ -1,7 +1,7 @@
 ##################################################################################################################################
 #                                                                                                                                #
 #                                                        ChestLock                                                               #
-#                                                         v1.5.0                                                                 #
+#                                                         v1.4.6                                                                 #
 #                        Secure player chests with the easy-to-use Chest Lock Plugin for Spigot servers.                         #
 #                                       Need help? Contact unsocial6136 on Discord                                               #
 #                                                                                                                                #
@@ -36,9 +36,6 @@ settings:
   # not recommended to change these
   lockID-characters: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   lockID-size: 12
-
-  # Enable or disable group-based access sharing
-  groupsEnabled: true
 
 lockables:
   ANVIL: true
@@ -82,13 +79,6 @@ messages:
   shareLockTip: '&8[&6ChestLock&8] &7Right click the lock that you would like to &agrant ownership &7for %target%'
   unshareLock: '&8[&6ChestLock&8] &7You &asuccessfully &7removed ownership for %target%'
   unshareLockTip: '&8[&6ChestLock&8] &7Right click the lock that you would like to &cremove ownership &7for %target%'
-  groupCreate: '&8[&6ChestLock&8] &7Created group &6%group% &7and added yourself'
-  groupExists: '&8[&6ChestLock&8] &cGroup named &6%group% &calready exists'
-  groupInvite: '&8[&6ChestLock&8] &7Added &6%target% &7to group &6%group%'
-  groupMissing: '&8[&6ChestLock&8] &cGroup named &6%group% &cdoes not exist'
-  groupNoAccess: '&8[&6ChestLock&8] &cYou must be the group owner to manage members'
-  groupLeave: '&8[&6ChestLock&8] &7You left group &6%group%'
-  groupDisband: '&8[&6ChestLock&8] &7Disbanded group &6%group%'
   
   # Intrusion Alert
   # Shift-Left-Click a chest with redstone in your hand
@@ -111,4 +101,4 @@ actions:
   makePublic: 'makePublic'
   
 # dont change this 
-configVersion: 1.2.0
+configVersion: 1.1.0

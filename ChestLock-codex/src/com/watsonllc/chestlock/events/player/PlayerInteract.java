@@ -15,7 +15,6 @@ import com.watsonllc.chestlock.commands.player.DestroyLock;
 import com.watsonllc.chestlock.commands.player.MakePublic;
 import com.watsonllc.chestlock.commands.player.RemoveOwner;
 import com.watsonllc.chestlock.config.Config;
-import com.watsonllc.chestlock.logic.GroupManager;
 import com.watsonllc.chestlock.logic.IntrusionAlert;
 import com.watsonllc.chestlock.logic.LockController;
 
@@ -49,9 +48,7 @@ public class PlayerInteract implements Listener {
 		if(!Utils.lockableBlock(event.getClickedBlock()))
 			return;
 		
-		boolean sharedGroup = Config.getBoolean("settings.groupsEnabled") && GroupManager.shareGroup(lc.getOwner(interactLocation), player.getName());
-
-		if(!lc.getAllowedPlayers(interactLocation).contains(player.getName()) && !sharedGroup)	{
+		if(!lc.getAllowedPlayers(interactLocation).contains(player.getName()))	{
 			event.setCancelled(true);
 			player.sendMessage(Config.getString("messages.invalidOwner").replace("%player%", lc.getOwner(interactLocation)));
 		}

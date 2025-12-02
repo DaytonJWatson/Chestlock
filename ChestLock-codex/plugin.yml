@@ -1,6 +1,6 @@
 name: ChestLock
 description: Secure player chests with the easy-to-use Chest Lock Plugin for Spigot servers.
-version: 1.5.0
+version: 1.4.6
 api-version: '1.21'
 main: com.watsonllc.chestlock.Main
 commands:

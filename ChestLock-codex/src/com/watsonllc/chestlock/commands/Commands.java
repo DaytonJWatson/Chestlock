@@ -17,7 +17,6 @@ import com.watsonllc.chestlock.commands.player.DestroyLock;
 import com.watsonllc.chestlock.commands.player.MakePublic;
 import com.watsonllc.chestlock.commands.player.RemoveOwner;
 import com.watsonllc.chestlock.config.Config;
-import com.watsonllc.chestlock.logic.GroupManager;
 
 public class Commands implements CommandExecutor {
 	
@@ -44,33 +43,26 @@ public class Commands implements CommandExecutor {
 		if(player.hasPermission("chestlock.public") || !usePermissions())
 			player.sendMessage(Utils.color("&8/&6chestlock &7public &8[&7toggle&8]"));
 		
-                if(player.hasPermission("chestlock.bypass") || !usePermissions())
-                        player.sendMessage(Utils.color("&8/&6chestlock &7bypass"));
-
-                if(player.hasPermission("chestlock.group") || !usePermissions()) {
-                        player.sendMessage(Utils.color("&8/&6chestlock &7group create &8<&7name&8>"));
-                        player.sendMessage(Utils.color("&8/&6chestlock &7group invite &8<&7player&8> &8<&7name&8>"));
-                        player.sendMessage(Utils.color("&8/&6chestlock &7group leave &8<&7name&8>"));
-                        player.sendMessage(Utils.color("&8/&6chestlock &7group disband &8<&7name&8>"));
-                }
+		if(player.hasPermission("chestlock.bypass") || !usePermissions())
+			player.sendMessage(Utils.color("&8/&6chestlock &7bypass"));
 		
 		if(usePermissions()) {
-                        List<String> permissions = Arrays.asList("chestlock.add","chestlock.remove","chestlock.claim","chestlock.destroy","chestlock.public","chestlock.bypass","chestlock.group");
-                        int totalPerms = 0;
-                        for(int i=0; i<permissions.size(); i++) {
-                                if(!player.hasPermission(permissions.get(i))) {
-                                        totalPerms++;
-                                }
-                        }
-
-                        // make sure to increase this when you add commands
-                        if(totalPerms == permissions.size()) {
-                                player.sendMessage(Utils.color("&cYou need a permission manager plugin to use commands! If you dont have a permission manager, you can disable 'usePermissions' in the config.yml"));
-                                player.sendMessage(Utils.color("&6Available permissions&7: &f" + permissions.toString()));
-                        }
-                }
-                return true;
-        }
+			List<String> permissions = Arrays.asList("chestlock.add","chestlock.remove","chestlock.claim","chestlock.destroy","chestlock.public","chestlock.bypass");
+			int totalPerms = 0;
+			for(int i=0; i<permissions.size(); i++) {
+				if(!player.hasPermission(permissions.get(i))) {
+					totalPerms++;
+				}
+			}
+			
+			// make sure to increase this when you add commands
+			if(totalPerms == 6) {
+				player.sendMessage(Utils.color("&cYou need a permission manager plugin to use commands! If you dont have a permission manager, you can disable 'usePermissions' in the config.yml"));
+				player.sendMessage(Utils.color("&6Available permissions&7: &f" + permissions.toString()));
+			}
+		}
+		return true;
+	}
 	
 	public static boolean usePermissions() {
 		return Config.getBoolean("settings.usePermissions");
@@ -92,124 +84,60 @@ public class Commands implements CommandExecutor {
 		// chestlock public
 		// chestlock bypass
 		// chestlock claim
-                // chestlock destroy
-                if(args.length == 1) {
-                        switch(args[0]) {
-                        case "public":
-                                return MakePublic.logic(player, false);
-                        case "bypass":
-                                return Bypass.logic(player);
-                        case "claim":
-                                return ClaimLock.logic(player, false);
-                        case "destroy":
-                                return DestroyLock.logic(player, false);
-                        case "group":
-                                return helpMenu(player);
-                        default:
-                                return helpMenu(player);
-                        }
-                }
-
-                // chestlock claim toggle
+		// chestlock destroy
+		if(args.length == 1) {
+			switch(args[0]) {
+			case "public":
+				return MakePublic.logic(player, false);
+			case "bypass":
+				return Bypass.logic(player);
+			case "claim":
+				return ClaimLock.logic(player, false);
+			case "destroy":
+				return DestroyLock.logic(player, false);
+			default:
+				return helpMenu(player);
+			}
+		}
+		
+		// chestlock claim toggle
 		// chestlock destroy toggle
 		// chestlock public toggle
 		// chestlock add <player>
 		// chestlock remove <player>
 		if(args.length == 2) {
-                        switch(args[0]) {
-                        case "claim":
-                                if(args[1].equalsIgnoreCase("toggle"))
-                                        return ClaimLock.logic(player, true);
-                        case "destroy":
-                                if(args[1].equalsIgnoreCase("toggle"))
-                                        return DestroyLock.logic(player, true);
-                        case "public":
-                                if(args[1].equalsIgnoreCase("toggle"))
-                                        return MakePublic.logic(player, true);
-                        case "add":
-                                return AddOwner.logic(player, args[1], false);
-                        case "remove":
-                                return RemoveOwner.logic(player, args[1], false);
-                        case "group":
-                                return handleGroupCommands(player, args);
-                        default:
-                                return helpMenu(player);
-                        }
-                }
+			switch(args[0]) {
+			case "claim":
+				if(args[1].equalsIgnoreCase("toggle"))
+					return ClaimLock.logic(player, true);
+			case "destroy":
+				if(args[1].equalsIgnoreCase("toggle"))
+					return DestroyLock.logic(player, true);
+			case "public":
+				if(args[1].equalsIgnoreCase("toggle"))
+					return MakePublic.logic(player, true);
+			case "add":
+				return AddOwner.logic(player, args[1], false);
+			case "remove":
+				return RemoveOwner.logic(player, args[1], false);
+			default:
+				return helpMenu(player);
+			}
+		}
 		
 		// chestlock add <player> toggle
 		// chestlock remove <player> toggle
 		if(args.length == 3) {
-                        switch(args[0]) {
-                        case "add":
-                                if(args[2].equalsIgnoreCase("toggle"))
-                                        return AddOwner.logic(player, args[1], true);
-                        case "remove":
-                                if(args[2].equalsIgnoreCase("toggle"))
-                                        return RemoveOwner.logic(player, args[1], true);
-                        case "group":
-                                return handleGroupCommands(player, args);
-                        }
-                }
-
-                return helpMenu(player);
-        }
-
-        private boolean handleGroupCommands(Player player, String[] args) {
-                if(!Config.getBoolean("settings.groupsEnabled")) {
-                        player.sendMessage(Utils.color(Config.getString("messages.groupMissing").replace("%group%", "Groups feature disabled")));
-                        return true;
-                }
-
-                if(usePermissions() && !player.hasPermission("chestlock.group")) {
-                        player.sendMessage(Config.getString("messages.noPermission"));
-                        return true;
-                }
-
-                if(args.length < 3)
-                        return helpMenu(player);
-
-                String action = args[1];
-                String groupName = args[args.length - 1];
-
-                switch(action.toLowerCase()) {
-                case "create":
-                        if(GroupManager.createGroup(player, groupName)) {
-                                player.sendMessage(Config.getString("messages.groupCreate").replace("%group%", groupName));
-                        } else {
-                                player.sendMessage(Config.getString("messages.groupExists").replace("%group%", groupName));
-                        }
-                        return true;
-                case "invite":
-                        if(args.length < 4)
-                                return helpMenu(player);
-                        String target = args[2];
-                        if(!GroupManager.groupExists(groupName)) {
-                                player.sendMessage(Config.getString("messages.groupMissing").replace("%group%", groupName));
-                                return true;
-                        }
-                        if(GroupManager.inviteToGroup(groupName, player.getName(), target)) {
-                                player.sendMessage(Config.getString("messages.groupInvite").replace("%group%", groupName).replace("%target%", target));
-                        } else {
-                                player.sendMessage(Config.getString("messages.groupNoAccess"));
-                        }
-                        return true;
-                case "leave":
-                        if(GroupManager.leaveGroup(groupName, player.getName())) {
-                                player.sendMessage(Config.getString("messages.groupLeave").replace("%group%", groupName));
-                        } else {
-                                player.sendMessage(Config.getString("messages.groupMissing").replace("%group%", groupName));
-                        }
-                        return true;
-                case "disband":
-                        if(GroupManager.disbandGroup(groupName, player.getName())) {
-                                player.sendMessage(Config.getString("messages.groupDisband").replace("%group%", groupName));
-                        } else {
-                                player.sendMessage(Config.getString("messages.groupNoAccess"));
-                        }
-                        return true;
-                default:
-                        return helpMenu(player);
-                }
-        }
+			switch(args[0]) {
+			case "add":
+				if(args[2].equalsIgnoreCase("toggle"))
+					return AddOwner.logic(player, args[1], true);
+			case "remove":
+				if(args[2].equalsIgnoreCase("toggle"))
+					return RemoveOwner.logic(player, args[1], true);
+			}
+		}
+		
+		return helpMenu(player);
+	}	
 }

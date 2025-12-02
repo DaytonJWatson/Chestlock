@@ -19,40 +19,25 @@ public class TabCommand implements TabCompleter {
 		// chestlock remove
 		// chestlock public
 		// chestlock bypass
-                if (args.length == 1) {
-                        List<String> subCommands = Arrays.asList("add","remove","claim","destroy","public","bypass","group");
-                        for (String subCommand : subCommands) {
-                                if (subCommand.toLowerCase().startsWith(args[0].toLowerCase())) {
-                                        completions.add(subCommand);
-                                }
-                        }
-                }
-
-                // chestlock add <player>
-                // chestlock remove <player>
-                if (args.length == 2 && !args[0].equalsIgnoreCase("group")) {
-                        for (Player player : Bukkit.getOnlinePlayers()) {
-                                completions.add(player.getName());
-                        }
-                }
-
-                if (args.length == 2 && args[0].equalsIgnoreCase("group")) {
-                        List<String> subCommands = Arrays.asList("create","invite","leave","disband");
-                        for (String subCommand : subCommands) {
-                                if (subCommand.toLowerCase().startsWith(args[1].toLowerCase())) {
-                                        completions.add(subCommand);
-                                }
-                        }
-                }
-
-                if (args.length == 3 && args[0].equalsIgnoreCase("group") && args[1].equalsIgnoreCase("invite")) {
-                        for (Player player : Bukkit.getOnlinePlayers()) {
-                                completions.add(player.getName());
-                        }
-                }
-
-                // chestlock bypass
-                if (args.length == 2 && args[0].equalsIgnoreCase("bypass"))
+		if (args.length == 1) {
+			List<String> subCommands = Arrays.asList("add","remove","claim","destroy","public","bypass");
+			for (String subCommand : subCommands) {
+				if (subCommand.toLowerCase().startsWith(args[0].toLowerCase())) {
+					completions.add(subCommand);
+				}
+			}
+		}
+		
+		// chestlock add <player>
+		// chestlock remove <player>
+		if (args.length == 2) {
+			for (Player player : Bukkit.getOnlinePlayers()) {
+				completions.add(player.getName());
+			}
+		}
+		
+		// chestlock bypass
+		if (args.length == 2 && args[0].equalsIgnoreCase("bypass"))
 			return null;
 
 		// chestlock public [toggle]

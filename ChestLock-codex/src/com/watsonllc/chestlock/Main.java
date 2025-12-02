@@ -35,7 +35,7 @@ public class Main extends JavaPlugin {
         
 		String currentVersion = this.getDescription().getVersion();
 		Object currentConfigVersion = (Object) this.getConfig().get("configVersion");
-                Object correctConfigVersion = "1.2.0";
+		Object correctConfigVersion = "1.1.0";
 		
 		Config.setup();
 		
