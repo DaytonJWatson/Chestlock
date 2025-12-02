@@ -7,10 +7,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
-import com.watsonllc.chestlock.Main;
 import com.watsonllc.chestlock.Utils;
 import com.watsonllc.chestlock.config.Config;
 import com.watsonllc.chestlock.logic.LockController;
+import com.watsonllc.chestlock.logic.PlayerStateManager;
 
 public class BlockBreak implements Listener {
 	@EventHandler
@@ -29,7 +29,7 @@ public class BlockBreak implements Listener {
 		if(!Utils.lockableBlock(block))
 			return;
 		
-		if(lc.getOwner(blockLocation).equals(player.getName()) || Main.bypassLocks.containsKey(event.getPlayer()))	{
+		if(lc.getOwner(blockLocation).equals(player.getName()) || PlayerStateManager.isBypassing(event.getPlayer()))	{
 			player.sendMessage(Config.getString("messages.removeLock"));
 			lc.removeLock(lc.getLockID(blockLocation));
 			return;
