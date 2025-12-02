@@ -7,7 +7,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import com.watsonllc.chestlock.Main;
 import com.watsonllc.chestlock.Utils;
 import com.watsonllc.chestlock.commands.player.AddOwner;
 import com.watsonllc.chestlock.commands.player.ClaimLock;
@@ -17,6 +16,7 @@ import com.watsonllc.chestlock.commands.player.RemoveOwner;
 import com.watsonllc.chestlock.config.Config;
 import com.watsonllc.chestlock.logic.IntrusionAlert;
 import com.watsonllc.chestlock.logic.LockController;
+import com.watsonllc.chestlock.logic.PlayerStateManager;
 
 public class PlayerInteract implements Listener {
 	@EventHandler
@@ -27,8 +27,8 @@ public class PlayerInteract implements Listener {
 		DestroyLock.eventChecker(event);
 		ClaimLock.eventChecker(event);
 		
-		if(Main.bypassLocks.containsKey(event.getPlayer()))
-			return;
+                if(PlayerStateManager.isBypassing(event.getPlayer()))
+                        return;
 		
 		if(event.getAction() != Action.RIGHT_CLICK_BLOCK)
 			return;

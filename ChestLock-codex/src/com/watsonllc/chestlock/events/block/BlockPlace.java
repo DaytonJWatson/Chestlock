@@ -9,10 +9,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-import com.watsonllc.chestlock.Main;
 import com.watsonllc.chestlock.Utils;
 import com.watsonllc.chestlock.config.Config;
 import com.watsonllc.chestlock.logic.LockController;
+import com.watsonllc.chestlock.logic.PlayerStateManager;
 
 public class BlockPlace implements Listener {
 	
@@ -28,21 +28,21 @@ public class BlockPlace implements Listener {
 	        return;
 
 	    // Don't allow placement if it's touching a lock and the player can't bypass
-	    if (adjacentToLock(lc, event, player) && !Main.bypassLocks.containsKey(player)) {
-	        return;
-	    }
+            if (adjacentToLock(lc, event, player) && !PlayerStateManager.isBypassing(player)) {
+                return;
+            }
 
 	    if (!autoLock)
 	        return;
 
 	    // If the player is bypassing lock controls, don't create a lock
-	    if (Main.bypassLocks.containsKey(player)) {
-	        if (!Main.bypassWarning.get(player)) {
-	            player.sendMessage(Utils.color(Config.getString("messages.bypassWarning")));
-	            Main.bypassWarning.replace(player, true);
-	        }
-	        return;
-	    }
+            if (PlayerStateManager.isBypassing(player)) {
+                if (!PlayerStateManager.hasSeenBypassWarning(player)) {
+                    player.sendMessage(Utils.color(Config.getString("messages.bypassWarning")));
+                    PlayerStateManager.markBypassWarned(player);
+                }
+                return;
+            }
 
 	    Bukkit.getScheduler().runTaskLater(Main.instance, () -> {
 	        Block placedBlock = block.getWorld().getBlockAt(block.getLocation());
@@ -68,8 +68,8 @@ public class BlockPlace implements Listener {
 			if (lc.naturalBlock(neighbor.getLocation()))
 				continue;
 
-			if (lc.getOwner(neighbor.getLocation()).equals(player.getName()) || Main.bypassLocks.containsKey(player))
-				continue;
+                        if (lc.getOwner(neighbor.getLocation()).equals(player.getName()) || PlayerStateManager.isBypassing(player))
+                                continue;
 
 			if (!Utils.lockableBlock(placedBlock))
 				continue;

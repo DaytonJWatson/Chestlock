@@ -11,16 +11,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import com.watsonllc.chestlock.Main;
 import com.watsonllc.chestlock.Utils;
 import com.watsonllc.chestlock.config.Config;
+import com.watsonllc.chestlock.logic.PlayerStateManager;
 
 public class IntrusionAlert implements Listener {
 	
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		if (Main.bypassLocks.containsKey(event.getPlayer()))
-			return;
+                if (PlayerStateManager.isBypassing(event.getPlayer()))
+                        return;
 		
 		if(event.getAction() != Action.LEFT_CLICK_BLOCK)
 			return;

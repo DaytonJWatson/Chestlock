@@ -1,7 +1,5 @@
 package com.watsonllc.chestlock;
 
-import java.util.HashMap;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -13,21 +11,10 @@ import com.watsonllc.chestlock.config.LocksData;
 import com.watsonllc.chestlock.events.Events;
 
 public class Main extends JavaPlugin {
-	
-	public static Main instance;
-	public static boolean pluginEnabled;
-	
-	// if i need to optimize in the future:
-	// combine all of these hashmaps
-	public static HashMap<Player, Boolean> destroyLock;
-	public static HashMap<Player, Boolean> bypassLocks;
-	public static HashMap<Player, Boolean> bypassWarning;
-	public static HashMap<Player, Boolean> makingPublic;
-	public static HashMap<Player, Boolean> claimingLock;
-	public static HashMap<Player, String> removingOwner;
-	public static HashMap<Player, String> addingOwner;
-	
-	public static boolean checkForUpdates;
+
+        public static Main instance;
+
+        public static boolean checkForUpdates;
 	
 	@Override
 	public void onEnable() {
@@ -39,27 +26,19 @@ public class Main extends JavaPlugin {
 		
 		Config.setup();
 		
-		if(!correctConfigVersion.equals(currentConfigVersion) || currentConfigVersion == null) {
-			Events.invalidConfig();
-        	getLogger().severe("#########################################################");
-            getLogger().severe("#        ChestLock found conflicting configurations     #");
-            getLogger().severe("#            You NEED to delete your config.yml         #");
-            getLogger().severe("#                 and GENERATE a NEW one!               #");
-            getLogger().severe("#            need help? Discord: unsocial6136           #");
-            getLogger().severe("#########################################################");
-			return;
-		}
-		
-		destroyLock = new HashMap<>();
-		bypassLocks = new HashMap<>();
-		bypassWarning = new HashMap<>();
-		removingOwner = new HashMap<>();
-		addingOwner = new HashMap<>();
-		makingPublic = new HashMap<>();
-		claimingLock = new HashMap<>();
-		
-		LocksData.create();
-		Commands.setup();
+                if(!correctConfigVersion.equals(currentConfigVersion) || currentConfigVersion == null) {
+                        Events.invalidConfig();
+                        getLogger().severe("#########################################################");
+                        getLogger().severe("#        ChestLock found conflicting configurations     #");
+                        getLogger().severe("#            You NEED to delete your config.yml         #");
+                        getLogger().severe("#                 and GENERATE a NEW one!               #");
+                        getLogger().severe("#            need help? Discord: unsocial6136           #");
+                        getLogger().severe("#########################################################");
+                        return;
+                }
+
+                LocksData.create();
+                Commands.setup();
 		Events.setup();
 		
 		checkForUpdates = Config.getBoolean("settings.updateChecker");
