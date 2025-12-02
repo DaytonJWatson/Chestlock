@@ -6,6 +6,7 @@ import com.watsonllc.chestlock.ErrorBuild;
 import com.watsonllc.chestlock.Main;
 import com.watsonllc.chestlock.events.block.BlockBreak;
 import com.watsonllc.chestlock.events.block.BlockExplode;
+import com.watsonllc.chestlock.events.block.InventoryMove;
 import com.watsonllc.chestlock.events.block.BlockPlace;
 import com.watsonllc.chestlock.events.block.EntityExplode;
 import com.watsonllc.chestlock.events.player.InventoryClick;
@@ -22,11 +23,12 @@ public class Events {
 	}
 	
 	public static void setup() {
-		pm.registerEvents(new BlockBreak(), Main.instance);
-		pm.registerEvents(new BlockExplode(), Main.instance);
-		pm.registerEvents(new BlockPlace(), Main.instance);
-		pm.registerEvents(new EntityExplode(), Main.instance);
-		pm.registerEvents(new InventoryClick(), Main.instance);
+                pm.registerEvents(new BlockBreak(), Main.instance);
+                pm.registerEvents(new BlockExplode(), Main.instance);
+                pm.registerEvents(new InventoryMove(), Main.instance);
+                pm.registerEvents(new BlockPlace(), Main.instance);
+                pm.registerEvents(new EntityExplode(), Main.instance);
+                pm.registerEvents(new InventoryClick(), Main.instance);
 		pm.registerEvents(new PlayerInteract(), Main.instance);
 		pm.registerEvents(new PlayerJoin(), Main.instance);
 		
