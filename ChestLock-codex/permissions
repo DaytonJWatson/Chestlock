@@ -6,3 +6,9 @@ chestlock.destroy
 chestlock.updatechecker
 chestlock.bypass
 chestlock.bypass.*
+chestlock.group.create
+chestlock.group.delete
+chestlock.group.add
+chestlock.group.remove
+chestlock.group.leave
+chestlock.group.list

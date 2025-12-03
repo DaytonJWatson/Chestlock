@@ -1,7 +1,6 @@
 package com.watsonllc.chestlock.events.block;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -83,17 +82,14 @@ public class InventoryMove implements Listener {
 
                         info.hasProtectedLock = true;
 
-                        List<String> allowedPlayers = lc.getAllowedPlayers(location);
+                        List<String> allowedPlayers = lc.getAllAccessors(location);
 
                         if(info.allowedPlayers.isEmpty()) {
-                                info.allowedPlayers = allowedPlayers == null ? Collections.emptyList() : new ArrayList<>(allowedPlayers);
+                                info.allowedPlayers = new ArrayList<>(allowedPlayers);
                                 continue;
                         }
 
-                        if(allowedPlayers == null)
-                                continue;
-
-                        if(!info.allowedPlayers.equals(allowedPlayers))
+                        if(!allowedPlayers.isEmpty() && !info.allowedPlayers.equals(allowedPlayers))
                                 info.conflictingOwners = true;
                 }
 

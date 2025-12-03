@@ -39,7 +39,7 @@ public class IntrusionAlert implements Listener {
 		if(lc.naturalBlock(interactLocation))
 			return;
 		
-		if(!lc.getAllowedPlayers(interactLocation).contains(player.getName()))
+		if(!lc.hasAccess(interactLocation, player.getName()))
 			return;
 		
 		if(!Utils.lockableBlock(event.getClickedBlock()))
@@ -63,19 +63,22 @@ public class IntrusionAlert implements Listener {
 		if(lc.getAlertMode(location) != true)
 			return;
 
-		List<String> owners = lc.getAllowedPlayers(location);
+                if (lc.hasAccess(location, player.getName()))
+                        return;
 
-		if (owners.contains(player.getName()))
-			return;
+                List<String> owners = lc.getAllowedPlayers(location);
 
-		for (int i = 0; i < owners.size(); i++) {
-			Player owner = Bukkit.getPlayer(owners.get(i));
+                if (owners == null || owners.isEmpty())
+                        return;
 
-			if (isPlayerWithinRadius(owner, location, Config.getInt("settings.alertRadius")))
-				return;
+                for (int i = 0; i < owners.size(); i++) {
+                        Player owner = Bukkit.getPlayer(owners.get(i));
 
-			if (owner == null)
-				return;
+                        if (owner == null)
+                                continue;
+
+                        if (isPlayerWithinRadius(owner, location, Config.getInt("settings.alertRadius")))
+                                return;
 
 			String intrusionAlertMSG = Config.getString("messages.intrusionAlert");
 			intrusionAlertMSG = intrusionAlertMSG.replace("%player%", player.getName());
