@@ -55,7 +55,7 @@ public class PlayerInteract implements Listener {
 		if(!Utils.lockableBlock(event.getClickedBlock()))
 			return;
 		
-		if(!lc.getAllowedPlayers(interactLocation).contains(player.getName()))	{
+		if(!lc.hasAccess(interactLocation, player.getName()))	{
 			event.setCancelled(true);
 			player.sendMessage(Config.getString("messages.invalidOwner").replace("%player%", lc.getOwner(interactLocation)));
 		}

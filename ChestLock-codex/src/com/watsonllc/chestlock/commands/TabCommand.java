@@ -10,76 +10,67 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import com.watsonllc.chestlock.logic.GroupController;
+
 public class TabCommand implements TabCompleter {
-	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> completions = new ArrayList<>();
+        @Override
+        public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+                List<String> completions = new ArrayList<>();
+                GroupController groupController = new GroupController();
 
 		// chestlock add
 		// chestlock remove
 		// chestlock public
 		// chestlock bypass
 		if (args.length == 1) {
-			List<String> subCommands = Arrays.asList("add","remove","claim","destroy","public","bypass");
-			for (String subCommand : subCommands) {
-				if (subCommand.toLowerCase().startsWith(args[0].toLowerCase())) {
-					completions.add(subCommand);
+                        List<String> subCommands = Arrays.asList("add","remove","claim","destroy","public","bypass","groupcreate","groupdelete","groupadd","groupremove","groupleave","grouplist");
+                        for (String subCommand : subCommands) {
+                                if (subCommand.toLowerCase().startsWith(args[0].toLowerCase())) {
+                                        completions.add(subCommand);
 				}
 			}
 		}
 		
-		// chestlock add <player>
-		// chestlock remove <player>
-		if (args.length == 2) {
-			for (Player player : Bukkit.getOnlinePlayers()) {
-				completions.add(player.getName());
-			}
-		}
-		
-		// chestlock bypass
-		if (args.length == 2 && args[0].equalsIgnoreCase("bypass"))
-			return null;
+                if (args.length == 2) {
+                        if (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("groupadd") || args[0].equalsIgnoreCase("groupremove")) {
+                                for (Player player : Bukkit.getOnlinePlayers()) {
+                                        completions.add(player.getName());
+                                }
+                        }
 
-		// chestlock public [toggle]
-		if (args.length == 2 && args[0].equalsIgnoreCase("public")) {
-			List<String> subCommand1Options = Arrays.asList("toggle");
-			for (String option : subCommand1Options) {
-				if (option.toLowerCase().startsWith(args[1].toLowerCase())) {
-					completions.add(option);
-				}
-			}
-		}
-		
-		// chestlock claim [toggle]
-		if (args.length == 2 && args[0].equalsIgnoreCase("claim")) {
-			List<String> subCommand1Options = Arrays.asList("toggle");
-			for (String option : subCommand1Options) {
-				if (option.toLowerCase().startsWith(args[1].toLowerCase())) {
-					completions.add(option);
-				}
-			}
-		}
-		
-		// chestlock destroy [toggle]
-		if (args.length == 2 && args[0].equalsIgnoreCase("destroy")) {
-			List<String> subCommand1Options = Arrays.asList("toggle");
-			for (String option : subCommand1Options) {
-				if (option.toLowerCase().startsWith(args[1].toLowerCase())) {
-					completions.add(option);
-				}
-			}
-		}
-		
-		if (args.length == 3) {
-			List<String> subCommand1Options = Arrays.asList("toggle");
-			for (String option : subCommand1Options) {
-				if (option.toLowerCase().startsWith(args[2].toLowerCase())) {
-					completions.add(option);
-				}
-			}
-		}
+                        if (args[0].equalsIgnoreCase("groupdelete") || args[0].equalsIgnoreCase("groupleave") || args[0].equalsIgnoreCase("grouplist")) {
+                                completions.addAll(groupController.getGroupNames());
+                        }
 
-		return completions;
-	}
+                        if (args[0].equalsIgnoreCase("bypass"))
+                                return null;
+
+                        if (args[0].equalsIgnoreCase("public") || args[0].equalsIgnoreCase("claim") || args[0].equalsIgnoreCase("destroy")) {
+                                List<String> subCommand1Options = Arrays.asList("toggle");
+                                for (String option : subCommand1Options) {
+                                        if (option.toLowerCase().startsWith(args[1].toLowerCase())) {
+                                                completions.add(option);
+                                        }
+                                }
+                        }
+                }
+		
+                if (args.length == 3) {
+                        if (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("remove")) {
+                                List<String> subCommand1Options = Arrays.asList("toggle");
+                                for (String option : subCommand1Options) {
+                                        if (option.toLowerCase().startsWith(args[2].toLowerCase())) {
+                                                completions.add(option);
+                                        }
+                                }
+                        }
+
+                        if (args[0].equalsIgnoreCase("groupadd") || args[0].equalsIgnoreCase("groupremove")) {
+                                completions.addAll(groupController.getGroupNames());
+                        }
+                }
+
+                return completions;
+        }
 
 }

@@ -2,7 +2,9 @@ package com.watsonllc.chestlock.logic;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -13,6 +15,7 @@ import com.watsonllc.chestlock.config.Config;
 import com.watsonllc.chestlock.config.LocksData;
 
 public class LockController {
+        private final GroupController groupController = new GroupController();
 	public String getLockID(Location location) {
 		List<String> activeLocks = LocksData.retrieveSubSections("Locks");
 
@@ -30,8 +33,8 @@ public class LockController {
 		return null;
 	}
 
-	public boolean naturalBlock(Location location) {
-		List<String> activeLocks = LocksData.retrieveSubSections("Locks");
+        public boolean naturalBlock(Location location) {
+                List<String> activeLocks = LocksData.retrieveSubSections("Locks");
 		List<Location> activeLocations = new ArrayList<>();
 
 		for (int i = 0; i < activeLocks.size(); i++) {
@@ -57,8 +60,8 @@ public class LockController {
 
 	}
 	
-	public List<String> getAllowedPlayers(Location location) {
-		List<String> activeLocks = LocksData.retrieveSubSections("Locks");
+        public List<String> getAllowedPlayers(Location location) {
+                List<String> activeLocks = LocksData.retrieveSubSections("Locks");
 		
 		for (int i = 0; i < activeLocks.size(); i++) {
 			String lockID = activeLocks.get(i);
@@ -80,9 +83,36 @@ public class LockController {
 		return null;
 	}
 
-	public String getOwner(Location location){
-		return getAllowedPlayers(location).get(0).toString();
-	}
+        public String getOwner(Location location){
+                return getAllowedPlayers(location).get(0).toString();
+        }
+
+        public boolean hasAccess(Location location, String playerName) {
+                List<String> allowedPlayers = getAllowedPlayers(location);
+
+                if (allowedPlayers == null)
+                        return false;
+
+                if (allowedPlayers.contains(playerName))
+                        return true;
+
+                return groupController.shareGroup(getOwner(location), playerName);
+        }
+
+        public List<String> getAllAccessors(Location location) {
+                List<String> allowedPlayers = getAllowedPlayers(location);
+                Set<String> accessors = new LinkedHashSet<>();
+
+                if (allowedPlayers != null)
+                        accessors.addAll(allowedPlayers);
+
+                String owner = getOwner(location);
+
+                if (owner != null)
+                        accessors.addAll(groupController.getSharedMembers(owner));
+
+                return new ArrayList<>(accessors);
+        }
 
 	public List<String> getLocks(Player player) {
 		return LocksData.retrieveSubSections("Locks");

@@ -8,6 +8,7 @@ import com.watsonllc.chestlock.commands.Commands;
 import com.watsonllc.chestlock.config.Config;
 import com.watsonllc.chestlock.config.LocksData;
 import com.watsonllc.chestlock.events.Events;
+import com.watsonllc.chestlock.config.GroupsData;
 
 public class Main extends JavaPlugin {
 
@@ -21,7 +22,7 @@ public class Main extends JavaPlugin {
         
 		String currentVersion = this.getDescription().getVersion();
 		Object currentConfigVersion = (Object) this.getConfig().get("configVersion");
-		Object correctConfigVersion = "1.1.0";
+                Object correctConfigVersion = "1.2.0";
 		
 		Config.setup();
 		
@@ -37,8 +38,9 @@ public class Main extends JavaPlugin {
                 }
 
                 LocksData.create();
+                GroupsData.create();
                 Commands.setup();
-		Events.setup();
+                Events.setup();
 		
 		checkForUpdates = Config.getBoolean("settings.updateChecker");
 		

@@ -79,6 +79,20 @@ messages:
   shareLockTip: '&8[&6ChestLock&8] &7Right click the lock that you would like to &agrant ownership &7for %target%'
   unshareLock: '&8[&6ChestLock&8] &7You &asuccessfully &7removed ownership for %target%'
   unshareLockTip: '&8[&6ChestLock&8] &7Right click the lock that you would like to &cremove ownership &7for %target%'
+
+  groupCreated: '&8[&6ChestLock&8] &7You created group &a%group%'
+  groupExists: '&8[&6ChestLock&8] &cA group with that name already exists'
+  groupDeleted: '&8[&6ChestLock&8] &7You deleted group &c%group%'
+  groupMissing: '&8[&6ChestLock&8] &cGroup &7%group% &cdoes not exist'
+  groupNotOwner: '&8[&6ChestLock&8] &cOnly the group owner can do that'
+  groupMemberAdded: '&8[&6ChestLock&8] &7You &aadded &7%target% to group &6%group%'
+  groupMemberRemoved: '&8[&6ChestLock&8] &7You &cremoved &7%target% from group &6%group%'
+  groupMemberMissing: '&8[&6ChestLock&8] &c%target% is not in that group'
+  groupMemberExists: '&8[&6ChestLock&8] &cThat player is already in the group'
+  groupCannotRemoveSelf: '&8[&6ChestLock&8] &cUse /chestlock groupleave to leave your group'
+  groupLeft: '&8[&6ChestLock&8] &7You left group &c%group%'
+  groupMembers: '&8[&6ChestLock&8] &7Group &6%group% &7members: &f%members%'
+  groupNoMembers: '&8[&6ChestLock&8] &cNo members found'
   
   # Intrusion Alert
   # Shift-Left-Click a chest with redstone in your hand
@@ -101,4 +115,4 @@ actions:
   makePublic: 'makePublic'
   
 # dont change this 
-configVersion: 1.1.0
+  configVersion: 1.2.0
