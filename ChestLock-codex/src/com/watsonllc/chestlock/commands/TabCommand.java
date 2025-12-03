@@ -22,16 +22,26 @@ public class TabCommand implements TabCompleter {
 		// chestlock remove
 		// chestlock public
 		// chestlock bypass
-		if (args.length == 1) {
-                        List<String> subCommands = Arrays.asList("add","remove","claim","destroy","public","bypass","groupcreate","groupdelete","groupadd","groupremove","groupleave","grouplist");
+                if (args.length == 1) {
+                        List<String> subCommands = Arrays.asList("add","remove","claim","destroy","public","bypass","group","groupcreate","groupdelete","groupadd","groupremove","groupleave","grouplist");
                         for (String subCommand : subCommands) {
                                 if (subCommand.toLowerCase().startsWith(args[0].toLowerCase())) {
                                         completions.add(subCommand);
-				}
-			}
-		}
-		
+                                }
+                        }
+                }
+
                 if (args.length == 2) {
+                        if (args[0].equalsIgnoreCase("group")) {
+                                List<String> groupSubCommands = Arrays.asList("create", "delete", "add", "remove", "leave", "list");
+                                for (String sub : groupSubCommands) {
+                                        if (sub.startsWith(args[1].toLowerCase())) {
+                                                completions.add(sub);
+                                        }
+                                }
+                                return completions;
+                        }
+
                         if (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("groupadd") || args[0].equalsIgnoreCase("groupremove")) {
                                 for (Player player : Bukkit.getOnlinePlayers()) {
                                         completions.add(player.getName());
@@ -56,6 +66,20 @@ public class TabCommand implements TabCompleter {
                 }
 		
                 if (args.length == 3) {
+                        if (args[0].equalsIgnoreCase("group")) {
+                                if (args[1].equalsIgnoreCase("add") || args[1].equalsIgnoreCase("remove")) {
+                                        for (Player player : Bukkit.getOnlinePlayers()) {
+                                                completions.add(player.getName());
+                                        }
+                                        return completions;
+                                }
+
+                                if (args[1].equalsIgnoreCase("delete") || args[1].equalsIgnoreCase("leave") || args[1].equalsIgnoreCase("list")) {
+                                        completions.addAll(groupController.getGroupNames());
+                                        return completions;
+                                }
+                        }
+
                         if (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("remove")) {
                                 List<String> subCommand1Options = Arrays.asList("toggle");
                                 for (String option : subCommand1Options) {
@@ -66,6 +90,12 @@ public class TabCommand implements TabCompleter {
                         }
 
                         if (args[0].equalsIgnoreCase("groupadd") || args[0].equalsIgnoreCase("groupremove")) {
+                                completions.addAll(groupController.getGroupNames());
+                        }
+                }
+
+                if (args.length == 4 && args[0].equalsIgnoreCase("group")) {
+                        if (args[1].equalsIgnoreCase("add") || args[1].equalsIgnoreCase("remove")) {
                                 completions.addAll(groupController.getGroupNames());
                         }
                 }

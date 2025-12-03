@@ -48,22 +48,22 @@ public class Commands implements CommandExecutor {
                         player.sendMessage(Utils.color("&8/&6chestlock &7bypass"));
 
                 if(player.hasPermission("chestlock.group.create") || !usePermissions())
-                        player.sendMessage(Utils.color("&8/&6chestlock &7groupcreate &8<&7group&8>"));
+                        player.sendMessage(Utils.color("&8/&6chestlock &7group create &8<&7group&8>"));
 
                 if(player.hasPermission("chestlock.group.delete") || !usePermissions())
-                        player.sendMessage(Utils.color("&8/&6chestlock &7groupdelete &8<&7group&8>"));
+                        player.sendMessage(Utils.color("&8/&6chestlock &7group delete &8<&7group&8>"));
 
                 if(player.hasPermission("chestlock.group.add") || !usePermissions())
-                        player.sendMessage(Utils.color("&8/&6chestlock &7groupadd &8<&7player&8> <&7group&8>"));
+                        player.sendMessage(Utils.color("&8/&6chestlock &7group add &8<&7player&8> <&7group&8>"));
 
                 if(player.hasPermission("chestlock.group.remove") || !usePermissions())
-                        player.sendMessage(Utils.color("&8/&6chestlock &7groupremove &8<&7player&8> <&7group&8>"));
+                        player.sendMessage(Utils.color("&8/&6chestlock &7group remove &8<&7player&8> <&7group&8>"));
 
                 if(player.hasPermission("chestlock.group.leave") || !usePermissions())
-                        player.sendMessage(Utils.color("&8/&6chestlock &7groupleave &8<&7group&8>"));
+                        player.sendMessage(Utils.color("&8/&6chestlock &7group leave &8<&7group&8>"));
 
                 if(player.hasPermission("chestlock.group.list") || !usePermissions())
-                        player.sendMessage(Utils.color("&8/&6chestlock &7grouplist &8<&7group&8>"));
+                        player.sendMessage(Utils.color("&8/&6chestlock &7group list &8<&7group&8>"));
 		
 		if(usePermissions()) {
                         List<String> permissions = Arrays.asList("chestlock.add","chestlock.remove","chestlock.claim","chestlock.destroy","chestlock.public","chestlock.bypass","chestlock.group.create","chestlock.group.delete","chestlock.group.add","chestlock.group.remove","chestlock.group.leave","chestlock.group.list");
@@ -96,15 +96,19 @@ public class Commands implements CommandExecutor {
 		
 		Player player = (Player) sender;
 		
-		if(args.length == 0) {
-			return helpMenu(player);
-		}
-		
-		// chestlock public
-		// chestlock bypass
-		// chestlock claim
-		// chestlock destroy
-		if(args.length == 1) {
+                if(args.length == 0) {
+                        return helpMenu(player);
+                }
+
+                if(args[0].equalsIgnoreCase("group")) {
+                        return handleGroup(player, args);
+                }
+
+                // chestlock public
+                // chestlock bypass
+                // chestlock claim
+                // chestlock destroy
+                if(args.length == 1) {
 			switch(args[0]) {
 			case "public":
 				return MakePublic.logic(player, false);
@@ -124,21 +128,21 @@ public class Commands implements CommandExecutor {
                 // chestlock public toggle
                 // chestlock add <player>
                 // chestlock remove <player>
-                // chestlock groupcreate <group>
-                // chestlock groupdelete <group>
-                // chestlock groupleave <group>
-                // chestlock grouplist <group>
+                // chestlock group create <group>
+                // chestlock group delete <group>
+                // chestlock group leave <group>
+                // chestlock group list <group>
                 if(args.length == 2) {
                         switch(args[0]) {
                         case "claim":
                                 if(args[1].equalsIgnoreCase("toggle"))
                                         return ClaimLock.logic(player, true);
-			case "destroy":
-				if(args[1].equalsIgnoreCase("toggle"))
-					return DestroyLock.logic(player, true);
-			case "public":
-				if(args[1].equalsIgnoreCase("toggle"))
-					return MakePublic.logic(player, true);
+                        case "destroy":
+                                if(args[1].equalsIgnoreCase("toggle"))
+                                        return DestroyLock.logic(player, true);
+                        case "public":
+                                if(args[1].equalsIgnoreCase("toggle"))
+                                        return MakePublic.logic(player, true);
                         case "add":
                                 return AddOwner.logic(player, args[1], false);
                         case "remove":
@@ -172,9 +176,71 @@ public class Commands implements CommandExecutor {
                                 return GroupCommands.add(player, args[1], args[2]);
                         case "groupremove":
                                 return GroupCommands.remove(player, args[1], args[2]);
+                        case "group":
+                                return handleGroup(player, args);
                         }
                 }
-		
-		return helpMenu(player);
-	}	
+
+                return helpMenu(player);
+        }
+
+        private boolean handleGroup(Player player, String[] args) {
+                if(args.length == 1) {
+                        return groupHelp(player);
+                }
+
+                String action = args[1].toLowerCase();
+
+                switch(action) {
+                case "create":
+                        if(args.length < 3) {
+                                player.sendMessage(Utils.color("&cUsage: /chestlock group create <group>"));
+                                return true;
+                        }
+                        return GroupCommands.create(player, args[2]);
+                case "delete":
+                        if(args.length < 3) {
+                                player.sendMessage(Utils.color("&cUsage: /chestlock group delete <group>"));
+                                return true;
+                        }
+                        return GroupCommands.delete(player, args[2]);
+                case "add":
+                        if(args.length < 4) {
+                                player.sendMessage(Utils.color("&cUsage: /chestlock group add <player> <group>"));
+                                return true;
+                        }
+                        return GroupCommands.add(player, args[2], args[3]);
+                case "remove":
+                        if(args.length < 4) {
+                                player.sendMessage(Utils.color("&cUsage: /chestlock group remove <player> <group>"));
+                                return true;
+                        }
+                        return GroupCommands.remove(player, args[2], args[3]);
+                case "leave":
+                        if(args.length < 3) {
+                                player.sendMessage(Utils.color("&cUsage: /chestlock group leave <group>"));
+                                return true;
+                        }
+                        return GroupCommands.leave(player, args[2]);
+                case "list":
+                        if(args.length < 3) {
+                                player.sendMessage(Utils.color("&cUsage: /chestlock group list <group>"));
+                                return true;
+                        }
+                        return GroupCommands.list(player, args[2]);
+                default:
+                        return groupHelp(player);
+                }
+        }
+
+        private boolean groupHelp(Player player) {
+                player.sendMessage(Utils.color("&8======== &6Group Help &8========"));
+                player.sendMessage(Utils.color("&8/&6chestlock &7group create &8<&7group&8>"));
+                player.sendMessage(Utils.color("&8/&6chestlock &7group delete &8<&7group&8>"));
+                player.sendMessage(Utils.color("&8/&6chestlock &7group add &8<&7player&8> <&7group&8>"));
+                player.sendMessage(Utils.color("&8/&6chestlock &7group remove &8<&7player&8> <&7group&8>"));
+                player.sendMessage(Utils.color("&8/&6chestlock &7group leave &8<&7group&8>"));
+                player.sendMessage(Utils.color("&8/&6chestlock &7group list &8<&7group&8>"));
+                return true;
+        }
 }
