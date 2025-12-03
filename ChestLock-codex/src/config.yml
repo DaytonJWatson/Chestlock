@@ -115,4 +115,4 @@ actions:
   makePublic: 'makePublic'
   
 # dont change this 
-  configVersion: 1.2.0
+configVersion: 1.1.0
