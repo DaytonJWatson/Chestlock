@@ -22,9 +22,11 @@ public class GroupController {
 
                 List<String> members = new ArrayList<>();
                 members.add(owner);
+                List<String> invites = new ArrayList<>();
 
                 GroupsData.set(path + ".owner", owner);
                 GroupsData.set(path + ".members", members);
+                GroupsData.set(path + ".invites", invites);
                 GroupsData.save();
                 return true;
         }
@@ -55,17 +57,70 @@ public class GroupController {
                 if (getGroupForPlayer(target) != null)
                         return false;
 
-                @SuppressWarnings("unchecked")
-                List<String> members = (List<String>) GroupsData.get(path + ".members");
+                return addMemberInternal(path, target);
+        }
 
-                if (members == null)
-                        members = new ArrayList<>();
+        public boolean inviteMember(String groupName, String requester, String target) {
+                String path = "Groups." + normalize(groupName);
 
-                if (members.contains(target))
+                if (!GroupsData.contains(path))
                         return false;
 
-                members.add(target);
-                GroupsData.set(path + ".members", members);
+                if (!isOwner(groupName, requester))
+                        return false;
+
+                if (getGroupForPlayer(target) != null)
+                        return false;
+
+                List<String> invites = getInvites(path);
+
+                if (invites.contains(target))
+                        return false;
+
+                invites.add(target);
+                GroupsData.set(path + ".invites", invites);
+                GroupsData.save();
+                return true;
+        }
+
+        public boolean acceptInvite(String groupName, String target) {
+                String path = "Groups." + normalize(groupName);
+
+                if (!GroupsData.contains(path))
+                        return false;
+
+                if (getGroupForPlayer(target) != null)
+                        return false;
+
+                List<String> invites = getInvites(path);
+
+                if (!invites.contains(target))
+                        return false;
+
+                invites.remove(target);
+                GroupsData.set(path + ".invites", invites);
+
+                boolean added = addMemberInternal(path, target);
+                if (!added)
+                        return false;
+
+                GroupsData.save();
+                return true;
+        }
+
+        public boolean declineInvite(String groupName, String target) {
+                String path = "Groups." + normalize(groupName);
+
+                if (!GroupsData.contains(path))
+                        return false;
+
+                List<String> invites = getInvites(path);
+
+                if (!invites.contains(target))
+                        return false;
+
+                invites.remove(target);
+                GroupsData.set(path + ".invites", invites);
                 GroupsData.save();
                 return true;
         }
@@ -143,6 +198,18 @@ public class GroupController {
                 return members == null ? new ArrayList<>() : new ArrayList<>(members);
         }
 
+        public List<String> getGroupInvites(String groupName) {
+                String path = "Groups." + normalize(groupName) + ".invites";
+
+                if (!GroupsData.contains(path))
+                        return new ArrayList<>();
+
+                @SuppressWarnings("unchecked")
+                List<String> invites = (List<String>) GroupsData.get(path);
+
+                return invites == null ? new ArrayList<>() : new ArrayList<>(invites);
+        }
+
         public Set<String> getSharedMembers(String player) {
                 Set<String> members = new HashSet<>();
 
@@ -172,6 +239,31 @@ public class GroupController {
                         return groupNames;
 
                 groupNames.addAll(section.getKeys(false));
+
+                return groupNames;
+        }
+
+        public List<String> getInviteGroupsForPlayer(String player) {
+                List<String> groupNames = new ArrayList<>();
+                ConfigurationSection section = GroupsData.getConfiguration().getConfigurationSection("Groups");
+
+                if (section == null)
+                        return groupNames;
+
+                for (String groupName : section.getKeys(false)) {
+                        @SuppressWarnings("unchecked")
+                        List<String> invites = (List<String>) GroupsData.get("Groups." + groupName + ".invites");
+
+                        if (invites == null)
+                                continue;
+
+                        for (String invite : invites) {
+                                if (invite.equalsIgnoreCase(player)) {
+                                        groupNames.add(groupName);
+                                        break;
+                                }
+                        }
+                }
 
                 return groupNames;
         }
@@ -216,5 +308,28 @@ public class GroupController {
 
         private String normalize(String groupName) {
                 return groupName.toLowerCase();
+        }
+
+        private List<String> getInvites(String path) {
+                @SuppressWarnings("unchecked")
+                List<String> invites = (List<String>) GroupsData.get(path + ".invites");
+
+                return invites == null ? new ArrayList<>() : new ArrayList<>(invites);
+        }
+
+        private boolean addMemberInternal(String path, String target) {
+                @SuppressWarnings("unchecked")
+                List<String> members = (List<String>) GroupsData.get(path + ".members");
+
+                if (members == null)
+                        members = new ArrayList<>();
+
+                if (members.contains(target))
+                        return false;
+
+                members.add(target);
+                GroupsData.set(path + ".members", members);
+                GroupsData.save();
+                return true;
         }
 }

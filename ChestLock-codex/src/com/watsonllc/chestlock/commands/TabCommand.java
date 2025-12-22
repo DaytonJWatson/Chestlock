@@ -10,10 +10,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import com.watsonllc.chestlock.logic.GroupController;
+
 public class TabCommand implements TabCompleter {
         @Override
         public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
                 List<String> completions = new ArrayList<>();
+                GroupController groupController = new GroupController();
 
 		// chestlock add
 		// chestlock remove
@@ -30,7 +33,7 @@ public class TabCommand implements TabCompleter {
 
                 if (args.length == 2) {
                         if (args[0].equalsIgnoreCase("group")) {
-                                List<String> groupSubCommands = Arrays.asList("create", "delete", "add", "remove", "leave", "list");
+                                List<String> groupSubCommands = Arrays.asList("create", "delete", "invite", "add", "remove", "accept", "decline", "invites", "leave", "list");
                                 for (String sub : groupSubCommands) {
                                         if (sub.startsWith(args[1].toLowerCase())) {
                                                 completions.add(sub);
@@ -60,10 +63,15 @@ public class TabCommand implements TabCompleter {
 		
                 if (args.length == 3) {
                         if (args[0].equalsIgnoreCase("group")) {
-                                if (args[1].equalsIgnoreCase("add") || args[1].equalsIgnoreCase("remove")) {
+                                if (args[1].equalsIgnoreCase("invite") || args[1].equalsIgnoreCase("add") || args[1].equalsIgnoreCase("remove")) {
                                         for (Player player : Bukkit.getOnlinePlayers()) {
                                                 completions.add(player.getName());
                                         }
+                                        return completions;
+                                }
+
+                                if ((args[1].equalsIgnoreCase("accept") || args[1].equalsIgnoreCase("decline")) && sender instanceof Player) {
+                                        completions.addAll(groupController.getInviteGroupsForPlayer(((Player) sender).getName()));
                                         return completions;
                                 }
                         }
