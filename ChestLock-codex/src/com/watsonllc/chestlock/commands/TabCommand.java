@@ -10,13 +10,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import com.watsonllc.chestlock.logic.GroupController;
-
 public class TabCommand implements TabCompleter {
         @Override
         public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
                 List<String> completions = new ArrayList<>();
-                GroupController groupController = new GroupController();
 
 		// chestlock add
 		// chestlock remove
@@ -69,11 +66,6 @@ public class TabCommand implements TabCompleter {
                                         }
                                         return completions;
                                 }
-
-                                if (args[1].equalsIgnoreCase("delete") || args[1].equalsIgnoreCase("leave") || args[1].equalsIgnoreCase("list")) {
-                                        completions.addAll(groupController.getGroupNames());
-                                        return completions;
-                                }
                         }
 
                         if (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("remove")) {
@@ -85,12 +77,6 @@ public class TabCommand implements TabCompleter {
                                 }
                         }
 
-                }
-
-                if (args.length == 4 && args[0].equalsIgnoreCase("group")) {
-                        if (args[1].equalsIgnoreCase("add") || args[1].equalsIgnoreCase("remove")) {
-                                completions.addAll(groupController.getGroupNames());
-                        }
                 }
 
                 return completions;
