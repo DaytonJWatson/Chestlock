@@ -1,5 +1,8 @@
 package com.watsonllc.chestlock.events.block;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
