@@ -224,6 +224,18 @@ public class LockController {
 		LocksData.set("Locks." + lockID, null);
 		LocksData.save();
 	}
+
+        public void moveLockLocation(String lockID, Location location) {
+                if (lockID == null || location == null)
+                        return;
+
+                String path = "Locks." + lockID + ".location";
+                LocksData.set(path + ".world", location.getWorld().getName());
+                LocksData.set(path + ".x", location.getBlockX());
+                LocksData.set(path + ".y", location.getBlockY());
+                LocksData.set(path + ".z", location.getBlockZ());
+                LocksData.save();
+        }
 	
 	public void removeOwner(Player owner, String target, Location location) {
 		String LockID = getLockID(location);

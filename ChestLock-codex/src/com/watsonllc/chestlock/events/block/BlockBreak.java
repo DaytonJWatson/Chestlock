@@ -34,18 +34,23 @@ public class BlockBreak implements Listener {
 		
 		if(lc.getOwner(blockLocation).equals(player.getName()) || PlayerStateManager.isBypassing(event.getPlayer()))	{
 			player.sendMessage(Config.getString("messages.removeLock"));
+			String lockId = lc.getLockID(blockLocation);
 
-			Set<String> lockIds = new LinkedHashSet<>();
-			for (Block targetBlock : Utils.getConnectedChestBlocks(block)) {
-				if (lc.naturalBlock(targetBlock.getLocation()))
+			for (Block connectedBlock : Utils.getConnectedChestBlocks(block)) {
+				if (connectedBlock.getLocation().equals(blockLocation))
 					continue;
-				String lockId = lc.getLockID(targetBlock.getLocation());
-				if (lockId != null) {
-					lockIds.add(lockId);
+
+				String connectedLockId = lc.getLockID(connectedBlock.getLocation());
+
+				if (connectedLockId == null && lockId != null) {
+					lc.moveLockLocation(lockId, connectedBlock.getLocation());
+					return;
 				}
+
+				break;
 			}
 
-			for (String lockId : lockIds) {
+			if (lockId != null) {
 				lc.removeLock(lockId);
 			}
 			return;
