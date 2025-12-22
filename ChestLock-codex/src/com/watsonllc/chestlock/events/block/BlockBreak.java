@@ -1,5 +1,8 @@
 package com.watsonllc.chestlock.events.block;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -31,7 +34,20 @@ public class BlockBreak implements Listener {
 		
 		if(lc.getOwner(blockLocation).equals(player.getName()) || PlayerStateManager.isBypassing(event.getPlayer()))	{
 			player.sendMessage(Config.getString("messages.removeLock"));
-			lc.removeLock(lc.getLockID(blockLocation));
+
+			Set<String> lockIds = new LinkedHashSet<>();
+			for (Block targetBlock : Utils.getConnectedChestBlocks(block)) {
+				if (lc.naturalBlock(targetBlock.getLocation()))
+					continue;
+				String lockId = lc.getLockID(targetBlock.getLocation());
+				if (lockId != null) {
+					lockIds.add(lockId);
+				}
+			}
+
+			for (String lockId : lockIds) {
+				lc.removeLock(lockId);
+			}
 			return;
 		} else {
 			event.setCancelled(true);
