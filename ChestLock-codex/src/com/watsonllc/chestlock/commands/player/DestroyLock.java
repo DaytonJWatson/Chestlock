@@ -1,5 +1,8 @@
 package com.watsonllc.chestlock.commands.player;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -69,12 +72,24 @@ public class DestroyLock {
 
                 // check if the player owns the lock or can bypass
                 if(lc.getOwner(blockLocation).equals(player.getName()) || PlayerStateManager.isBypassing(player)) {
-                        String lockID = lc.getLockID(event.getClickedBlock().getLocation());
                         String lockType = lc.getLockType(event.getClickedBlock().getLocation());
                         String destroyedLockMSG = Config.getString("messages.destroyedLock");
                         destroyedLockMSG = destroyedLockMSG.replace("%type%", lockType);
                         player.sendMessage(destroyedLockMSG);
-                        lc.removeLock(lockID);
+
+                        Set<String> lockIds = new LinkedHashSet<>();
+                        for (Block targetBlock : Utils.getConnectedChestBlocks(block)) {
+                                if (lc.naturalBlock(targetBlock.getLocation()))
+                                        continue;
+                                String lockId = lc.getLockID(targetBlock.getLocation());
+                                if (lockId != null) {
+                                        lockIds.add(lockId);
+                                }
+                        }
+
+                        for (String lockId : lockIds) {
+                                lc.removeLock(lockId);
+                        }
 
                         if(PlayerStateManager.isToggleEnabled(player, PlayerActionType.DESTROY_LOCK))
                                 return;

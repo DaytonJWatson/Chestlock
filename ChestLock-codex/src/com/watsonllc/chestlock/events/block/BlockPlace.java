@@ -55,8 +55,19 @@ public class BlockPlace implements Listener {
 
 	        // Ensure the block still exists AND is not AIR
 	        if (placedBlock.getType() == block.getType() && placedBlock.getType() != Material.AIR) {
-	            lc.createLock(player, block);
-	            player.sendMessage(Config.getString("messages.createLock"));
+	            boolean createdLock = false;
+
+	            for (Block targetBlock : Utils.getConnectedChestBlocks(placedBlock)) {
+	                    if (!lc.naturalBlock(targetBlock.getLocation()))
+	                            continue;
+
+	                    lc.createLock(player, targetBlock);
+	                    createdLock = true;
+	            }
+
+	            if (createdLock) {
+	                    player.sendMessage(Config.getString("messages.createLock"));
+	            }
 	        }
 	    }, 10L);
 	}

@@ -1,7 +1,16 @@
 package com.watsonllc.chestlock;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
+import org.bukkit.inventory.InventoryHolder;
 
 import com.watsonllc.chestlock.config.Config;
 
@@ -90,6 +99,37 @@ public class Utils {
 			return Config.getBoolean("lockables.TRAPPED_CHEST");
 		default:
 			return false;
+		}
+	}
+
+	public static List<Block> getConnectedChestBlocks(Block block) {
+		Set<Block> blocks = new LinkedHashSet<>();
+
+		if (!(block.getState() instanceof Chest)) {
+			blocks.add(block);
+			return new ArrayList<>(blocks);
+		}
+
+		Chest chest = (Chest) block.getState();
+		InventoryHolder holder = chest.getInventory().getHolder();
+
+		if (holder instanceof DoubleChest) {
+			DoubleChest doubleChest = (DoubleChest) holder;
+			addHolderBlock(doubleChest.getLeftSide(), blocks);
+			addHolderBlock(doubleChest.getRightSide(), blocks);
+			if (blocks.isEmpty()) {
+				blocks.add(block);
+			}
+		} else {
+			blocks.add(block);
+		}
+
+		return new ArrayList<>(blocks);
+	}
+
+	private static void addHolderBlock(InventoryHolder holder, Set<Block> blocks) {
+		if (holder instanceof BlockState) {
+			blocks.add(((BlockState) holder).getBlock());
 		}
 	}
 }
