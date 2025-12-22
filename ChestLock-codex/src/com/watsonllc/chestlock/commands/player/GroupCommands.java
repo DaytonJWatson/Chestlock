@@ -14,6 +14,12 @@ public class GroupCommands {
                 if (!hasPermission(player, "chestlock.group.create"))
                         return false;
 
+                String existingGroup = GROUP_CONTROLLER.getGroupForPlayer(player.getName());
+                if (existingGroup != null) {
+                        player.sendMessage(Config.getString("messages.groupAlreadyIn").replace("%group%", existingGroup));
+                        return false;
+                }
+
                 if (GROUP_CONTROLLER.createGroup(groupName, player.getName())) {
                         player.sendMessage(Config.getString("messages.groupCreated").replace("%group%", groupName));
                         return true;
@@ -23,47 +29,58 @@ public class GroupCommands {
                 return false;
         }
 
-        public static boolean delete(Player player, String groupName) {
+        public static boolean delete(Player player) {
                 if (!hasPermission(player, "chestlock.group.delete"))
                         return false;
 
-                if (!GROUP_CONTROLLER.groupExists(groupName)) {
-                        player.sendMessage(Config.getString("messages.groupMissing").replace("%group%", groupName));
+                String ownedGroup = GROUP_CONTROLLER.getOwnedGroup(player.getName());
+                if (ownedGroup == null) {
+                        String memberGroup = GROUP_CONTROLLER.getGroupForPlayer(player.getName());
+                        if (memberGroup != null) {
+                                player.sendMessage(Config.getString("messages.groupNotOwner"));
+                                return false;
+                        }
+                        player.sendMessage(Config.getString("messages.groupNotInGroup"));
                         return false;
                 }
 
-                if (!GROUP_CONTROLLER.isOwner(groupName, player.getName())) {
-                        player.sendMessage(Config.getString("messages.groupNotOwner"));
-                        return false;
-                }
-
-                if (GROUP_CONTROLLER.deleteGroup(groupName, player.getName())) {
-                        player.sendMessage(Config.getString("messages.groupDeleted").replace("%group%", groupName));
+                if (GROUP_CONTROLLER.deleteGroup(ownedGroup, player.getName())) {
+                        player.sendMessage(Config.getString("messages.groupDeleted").replace("%group%", ownedGroup));
                         return true;
                 }
 
-                player.sendMessage(Config.getString("messages.groupMissing").replace("%group%", groupName));
+                player.sendMessage(Config.getString("messages.groupMissing").replace("%group%", ownedGroup));
                 return false;
         }
 
-        public static boolean add(Player player, String target, String groupName) {
+        public static boolean add(Player player, String target) {
                 if (!hasPermission(player, "chestlock.group.add"))
                         return false;
 
-                if (!GROUP_CONTROLLER.groupExists(groupName)) {
-                        player.sendMessage(Config.getString("messages.groupMissing").replace("%group%", groupName));
+                String ownedGroup = GROUP_CONTROLLER.getOwnedGroup(player.getName());
+                if (ownedGroup == null) {
+                        String memberGroup = GROUP_CONTROLLER.getGroupForPlayer(player.getName());
+                        if (memberGroup != null) {
+                                player.sendMessage(Config.getString("messages.groupNotOwner"));
+                                return false;
+                        }
+                        player.sendMessage(Config.getString("messages.groupNotInGroup"));
                         return false;
                 }
 
-                if (!GROUP_CONTROLLER.isOwner(groupName, player.getName())) {
-                        player.sendMessage(Config.getString("messages.groupNotOwner"));
+                String targetGroup = GROUP_CONTROLLER.getGroupForPlayer(target);
+                if (targetGroup != null) {
+                        String alreadyIn = Config.getString("messages.groupTargetAlreadyIn");
+                        alreadyIn = alreadyIn.replace("%target%", target);
+                        alreadyIn = alreadyIn.replace("%group%", targetGroup);
+                        player.sendMessage(alreadyIn);
                         return false;
                 }
 
-                if (GROUP_CONTROLLER.addMember(groupName, player.getName(), target)) {
+                if (GROUP_CONTROLLER.addMember(ownedGroup, player.getName(), target)) {
                         String added = Config.getString("messages.groupMemberAdded");
                         added = added.replace("%target%", target);
-                        added = added.replace("%group%", groupName);
+                        added = added.replace("%group%", ownedGroup);
                         player.sendMessage(added);
                         return true;
                 }
@@ -72,17 +89,18 @@ public class GroupCommands {
                 return false;
         }
 
-        public static boolean remove(Player player, String target, String groupName) {
+        public static boolean remove(Player player, String target) {
                 if (!hasPermission(player, "chestlock.group.remove"))
                         return false;
 
-                if (!GROUP_CONTROLLER.groupExists(groupName)) {
-                        player.sendMessage(Config.getString("messages.groupMissing").replace("%group%", groupName));
-                        return false;
-                }
-
-                if (!GROUP_CONTROLLER.isOwner(groupName, player.getName())) {
-                        player.sendMessage(Config.getString("messages.groupNotOwner"));
+                String ownedGroup = GROUP_CONTROLLER.getOwnedGroup(player.getName());
+                if (ownedGroup == null) {
+                        String memberGroup = GROUP_CONTROLLER.getGroupForPlayer(player.getName());
+                        if (memberGroup != null) {
+                                player.sendMessage(Config.getString("messages.groupNotOwner"));
+                                return false;
+                        }
+                        player.sendMessage(Config.getString("messages.groupNotInGroup"));
                         return false;
                 }
 
@@ -91,10 +109,10 @@ public class GroupCommands {
                         return false;
                 }
 
-                if (GROUP_CONTROLLER.removeMember(groupName, player.getName(), target)) {
+                if (GROUP_CONTROLLER.removeMember(ownedGroup, player.getName(), target)) {
                         String removed = Config.getString("messages.groupMemberRemoved");
                         removed = removed.replace("%target%", target);
-                        removed = removed.replace("%group%", groupName);
+                        removed = removed.replace("%group%", ownedGroup);
                         player.sendMessage(removed);
                         return true;
                 }
@@ -103,17 +121,13 @@ public class GroupCommands {
                 return false;
         }
 
-        public static boolean leave(Player player, String groupName) {
+        public static boolean leave(Player player) {
                 if (!hasPermission(player, "chestlock.group.leave"))
                         return false;
 
-                if (!GROUP_CONTROLLER.groupExists(groupName)) {
-                        player.sendMessage(Config.getString("messages.groupMissing").replace("%group%", groupName));
-                        return false;
-                }
-
-                if (!GROUP_CONTROLLER.getGroupMembers(groupName).contains(player.getName())) {
-                        player.sendMessage(Config.getString("messages.groupMemberMissing").replace("%target%", player.getName()));
+                String groupName = GROUP_CONTROLLER.getGroupForPlayer(player.getName());
+                if (groupName == null) {
+                        player.sendMessage(Config.getString("messages.groupNotInGroup"));
                         return false;
                 }
 
@@ -126,17 +140,13 @@ public class GroupCommands {
                 return false;
         }
 
-        public static boolean list(Player player, String groupName) {
+        public static boolean list(Player player) {
                 if (!hasPermission(player, "chestlock.group.list"))
                         return false;
 
-                if (!GROUP_CONTROLLER.groupExists(groupName)) {
-                        player.sendMessage(Config.getString("messages.groupMissing").replace("%group%", groupName));
-                        return false;
-                }
-
-                if (!GROUP_CONTROLLER.getGroupMembers(groupName).contains(player.getName())) {
-                        player.sendMessage(Config.getString("messages.groupMemberMissing").replace("%target%", player.getName()));
+                String groupName = GROUP_CONTROLLER.getGroupForPlayer(player.getName());
+                if (groupName == null) {
+                        player.sendMessage(Config.getString("messages.groupNotInGroup"));
                         return false;
                 }
 

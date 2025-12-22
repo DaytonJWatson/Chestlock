@@ -17,6 +17,9 @@ public class GroupController {
                 if (GroupsData.contains(path))
                         return false;
 
+                if (getGroupForPlayer(owner) != null)
+                        return false;
+
                 List<String> members = new ArrayList<>();
                 members.add(owner);
 
@@ -47,6 +50,9 @@ public class GroupController {
                         return false;
 
                 if (!isOwner(groupName, requester))
+                        return false;
+
+                if (getGroupForPlayer(target) != null)
                         return false;
 
                 @SuppressWarnings("unchecked")
@@ -140,42 +146,21 @@ public class GroupController {
         public Set<String> getSharedMembers(String player) {
                 Set<String> members = new HashSet<>();
 
-                ConfigurationSection section = GroupsData.getConfiguration().getConfigurationSection("Groups");
+                String groupName = getGroupForPlayer(player);
 
-                if (section == null)
+                if (groupName == null)
                         return members;
 
-                for (String groupName : section.getKeys(false)) {
-                        @SuppressWarnings("unchecked")
-                        List<String> groupMembers = (List<String>) GroupsData.get("Groups." + groupName + ".members");
-
-                        if (groupMembers == null || !groupMembers.contains(player))
-                                continue;
-
-                        members.addAll(groupMembers);
-                }
+                members.addAll(getGroupMembers(groupName));
 
                 return members;
         }
 
         public boolean shareGroup(String firstPlayer, String secondPlayer) {
-                ConfigurationSection section = GroupsData.getConfiguration().getConfigurationSection("Groups");
+                String firstGroup = getGroupForPlayer(firstPlayer);
+                String secondGroup = getGroupForPlayer(secondPlayer);
 
-                if (section == null)
-                        return false;
-
-                for (String groupName : section.getKeys(false)) {
-                        @SuppressWarnings("unchecked")
-                        List<String> members = (List<String>) GroupsData.get("Groups." + groupName + ".members");
-
-                        if (members == null)
-                                continue;
-
-                        if (members.contains(firstPlayer) && members.contains(secondPlayer))
-                                return true;
-                }
-
-                return false;
+                return firstGroup != null && firstGroup.equalsIgnoreCase(secondGroup);
         }
 
         public List<String> getGroupNames() {
@@ -189,6 +174,44 @@ public class GroupController {
                 groupNames.addAll(section.getKeys(false));
 
                 return groupNames;
+        }
+
+        public String getGroupForPlayer(String player) {
+                ConfigurationSection section = GroupsData.getConfiguration().getConfigurationSection("Groups");
+
+                if (section == null)
+                        return null;
+
+                for (String groupName : section.getKeys(false)) {
+                        @SuppressWarnings("unchecked")
+                        List<String> members = (List<String>) GroupsData.get("Groups." + groupName + ".members");
+
+                        if (members == null)
+                                continue;
+
+                        for (String member : members) {
+                                if (member.equalsIgnoreCase(player))
+                                        return groupName;
+                        }
+                }
+
+                return null;
+        }
+
+        public String getOwnedGroup(String owner) {
+                ConfigurationSection section = GroupsData.getConfiguration().getConfigurationSection("Groups");
+
+                if (section == null)
+                        return null;
+
+                for (String groupName : section.getKeys(false)) {
+                        String groupOwner = (String) GroupsData.get("Groups." + groupName + ".owner");
+
+                        if (groupOwner != null && groupOwner.equalsIgnoreCase(owner))
+                                return groupName;
+                }
+
+                return null;
         }
 
         private String normalize(String groupName) {
