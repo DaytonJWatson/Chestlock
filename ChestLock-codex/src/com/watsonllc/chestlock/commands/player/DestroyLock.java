@@ -68,7 +68,7 @@ public class DestroyLock {
                 }
 
                 // check if the player owns the lock or can bypass
-                if(!lc.getOwner(blockLocation).equals(player.getName())) {
+                if(lc.getOwner(blockLocation).equals(player.getName()) || PlayerStateManager.isBypassing(player)) {
                         String lockID = lc.getLockID(event.getClickedBlock().getLocation());
                         String lockType = lc.getLockType(event.getClickedBlock().getLocation());
                         String destroyedLockMSG = Config.getString("messages.destroyedLock");
