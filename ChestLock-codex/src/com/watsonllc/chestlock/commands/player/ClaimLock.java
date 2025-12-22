@@ -1,5 +1,6 @@
 package com.watsonllc.chestlock.commands.player;
 
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -62,7 +63,11 @@ public class ClaimLock {
                         return;
                 }
 
-                lc.createLock(player, event.getClickedBlock());
+                for (Block targetBlock : Utils.getConnectedChestBlocks(event.getClickedBlock())) {
+                        if (!lc.naturalBlock(targetBlock.getLocation()))
+                                continue;
+                        lc.createLock(player, targetBlock);
+                }
                 String lockType = lc.getLockType(event.getClickedBlock().getLocation());
                 String claimLockMSG = Config.getString("messages.claimLock");
                 claimLockMSG = claimLockMSG.replace("%type%", lockType);

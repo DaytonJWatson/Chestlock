@@ -1,7 +1,15 @@
 package com.watsonllc.chestlock;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
+import org.bukkit.inventory.InventoryHolder;
 
 import com.watsonllc.chestlock.config.Config;
 
@@ -91,5 +99,27 @@ public class Utils {
 		default:
 			return false;
 		}
+	}
+
+	public static List<Block> getConnectedChestBlocks(Block block) {
+		Set<Block> blocks = new LinkedHashSet<>();
+
+		if (!(block.getState() instanceof Chest)) {
+			blocks.add(block);
+			return new ArrayList<>(blocks);
+		}
+
+		Chest chest = (Chest) block.getState();
+		InventoryHolder holder = chest.getInventory().getHolder();
+
+		if (holder instanceof DoubleChest) {
+			DoubleChest doubleChest = (DoubleChest) holder;
+			blocks.add(doubleChest.getLeftSide().getBlock());
+			blocks.add(doubleChest.getRightSide().getBlock());
+		} else {
+			blocks.add(block);
+		}
+
+		return new ArrayList<>(blocks);
 	}
 }
