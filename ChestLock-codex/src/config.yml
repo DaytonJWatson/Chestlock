@@ -32,7 +32,7 @@ settings:
   # if you use MIDDLE, you have to be holding a item in the inventory or in creative
   # sortBy options 'alphabetical', 'type'
   # sortWith options 'LEFT', 'RIGHT', 'SHIFT_LEFT', 'SHIFT_RIGHT', 'MIDDLE', 'NUMBER_KEY', 'DOUBLE_CLICK', 'SWAP_OFFHAND'
-  sortInventoryEnabled: true
+  sortInventoryEnabled: false
   sortBy: 'type'
   sortWith: 'DOUBLE_CLICK'
   
