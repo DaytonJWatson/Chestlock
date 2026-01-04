@@ -34,11 +34,15 @@ public class LocksData {
 	public static Object get(String string) {
 		return locks.get(string);
 	}
-	
+
 	// dont forget to save();
 	public static void set(String string, Object object) {
 		locks.set(string, object);
 	}
+
+        public static YamlConfiguration getConfiguration() {
+                return locks;
+        }
 	
 	public static List<String> retrieveSubSections(String sectionPath) {
         List<String> subSections = new ArrayList<>();

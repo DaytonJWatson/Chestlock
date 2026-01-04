@@ -9,6 +9,9 @@ import com.watsonllc.chestlock.config.Config;
 import com.watsonllc.chestlock.config.LocksData;
 import com.watsonllc.chestlock.events.Events;
 import com.watsonllc.chestlock.config.GroupsData;
+import com.watsonllc.chestlock.logic.GroupController;
+import com.watsonllc.chestlock.logic.HopperCache;
+import com.watsonllc.chestlock.logic.LockController;
 
 public class Main extends JavaPlugin {
 
@@ -22,7 +25,7 @@ public class Main extends JavaPlugin {
         
 		String currentVersion = this.getDescription().getVersion();
 		Object currentConfigVersion = (Object) this.getConfig().get("configVersion");
-                Object correctConfigVersion = "1.2.1";
+                Object correctConfigVersion = "1.3.0";
 		
 		Config.setup();
 		
@@ -39,6 +42,10 @@ public class Main extends JavaPlugin {
 
                 LocksData.create();
                 GroupsData.create();
+                LockController.loadLocksFromDisk();
+                GroupController.loadGroupsFromDisk();
+                HopperCache.configureTtl(Config.getInt("settings.hopper-cache-ttl-ticks"));
+                HopperCache.startTickCounter();
                 Commands.setup();
                 Events.setup();
 		
