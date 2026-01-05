@@ -33,6 +33,10 @@ public class Config {
 	public static String getString(String string) {
 		return Utils.color(Main.instance.getConfig().getString(string));
 	}
+
+        public static String getStringRaw(String string) {
+                return Main.instance.getConfig().getString(string);
+        }
 	
 	public static Boolean getBoolean(String string) {
 		return Main.instance.getConfig().getBoolean(string);

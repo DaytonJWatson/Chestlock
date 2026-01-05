@@ -9,6 +9,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.World;
 
 import com.watsonllc.chestlock.logic.GroupController;
 
@@ -23,7 +24,7 @@ public class TabCommand implements TabCompleter {
 		// chestlock public
 		// chestlock bypass
                 if (args.length == 1) {
-                        List<String> subCommands = Arrays.asList("add","remove","claim","destroy","public","bypass","group");
+                        List<String> subCommands = Arrays.asList("add","remove","claim","destroy","public","bypass","group","taghoppers");
                         for (String subCommand : subCommands) {
                                 if (subCommand.toLowerCase().startsWith(args[0].toLowerCase())) {
                                         completions.add(subCommand);
@@ -32,6 +33,14 @@ public class TabCommand implements TabCompleter {
                 }
 
                 if (args.length == 2) {
+                        if (args[0].equalsIgnoreCase("taghoppers")) {
+                                completions.add("SERVER");
+                                for (Player player : Bukkit.getOnlinePlayers()) {
+                                        completions.add(player.getName());
+                                }
+                                return completions;
+                        }
+
                         if (args[0].equalsIgnoreCase("group")) {
                                 List<String> groupSubCommands = Arrays.asList("create", "delete", "invite", "add", "remove", "accept", "decline", "invites", "leave", "list");
                                 for (String sub : groupSubCommands) {
@@ -62,6 +71,16 @@ public class TabCommand implements TabCompleter {
                 }
 		
                 if (args.length == 3) {
+                        if (args[0].equalsIgnoreCase("taghoppers")) {
+                                for (World world : Bukkit.getWorlds()) {
+                                        if (world.getName().toLowerCase().startsWith(args[2].toLowerCase()))
+                                                completions.add(world.getName());
+                                }
+                                completions.add("50");
+                                completions.add("100");
+                                return completions;
+                        }
+
                         if (args[0].equalsIgnoreCase("group")) {
                                 if (args[1].equalsIgnoreCase("invite") || args[1].equalsIgnoreCase("add") || args[1].equalsIgnoreCase("remove")) {
                                         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -85,6 +104,11 @@ public class TabCommand implements TabCompleter {
                                 }
                         }
 
+                }
+
+                if (args.length == 4 && args[0].equalsIgnoreCase("taghoppers")) {
+                        if ("minecarts".startsWith(args[3].toLowerCase()))
+                                completions.add("minecarts");
                 }
 
                 return completions;

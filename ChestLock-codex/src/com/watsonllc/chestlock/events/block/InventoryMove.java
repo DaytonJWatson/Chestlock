@@ -2,9 +2,9 @@ package com.watsonllc.chestlock.events.block;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -27,9 +27,11 @@ import com.watsonllc.chestlock.config.Config;
 import com.watsonllc.chestlock.logic.BlockKey;
 import com.watsonllc.chestlock.logic.HopperCache;
 import com.watsonllc.chestlock.logic.HopperDecisionKey;
+import com.watsonllc.chestlock.logic.HopperDecisionSimulator;
 import com.watsonllc.chestlock.logic.HopperOwnerData;
 import com.watsonllc.chestlock.logic.LockController;
 import com.watsonllc.chestlock.logic.LockEntry;
+import com.watsonllc.chestlock.logic.UntaggedHopperPolicy;
 
 public class InventoryMove implements Listener {
         private static final LockController LOCK_CONTROLLER = new LockController();
@@ -83,30 +85,25 @@ public class InventoryMove implements Listener {
                         LockInfo destinationInfo = resolveLockInfo(destinationContext, lockIndex);
                         lockLookupNanos.addAndGet(System.nanoTime() - lockStart);
 
-                        if (sourceInfo.conflictingOwners || destinationInfo.conflictingOwners) {
-                                event.setCancelled(true);
-                                HopperCache.put(decisionKey, false);
-                                return;
-                        }
+                        boolean hasProtectedLock = sourceInfo.hasProtectedLock || destinationInfo.hasProtectedLock;
+                        UntaggedHopperPolicy policy = UntaggedHopperPolicy
+                                        .fromConfig(Config.getStringRaw("settings.untagged-hoppers"));
 
-                        String hopperOwner = resolveHopperOwner(initiatorHolder);
+                        HopperDecisionSimulator.DecisionResult decision = HopperDecisionSimulator.evaluate(policy,
+                                        resolveHopperOwner(initiatorHolder), sourceInfo.hasProtectedLock,
+                                        destinationInfo.hasProtectedLock,
+                                        sourceInfo.conflictingOwners || destinationInfo.conflictingOwners,
+                                        sourceInfo.getAllowedPlayers(), destinationInfo.getAllowedPlayers(),
+                                        hasProtectedLock ? () -> tagHopperOnUse(initiatorHolder, sourceInfo,
+                                                        destinationInfo) : null);
 
-                        if (hopperOwner == null) {
-                                event.setCancelled(true);
-                                HopperCache.put(decisionKey, false);
-                                return;
-                        }
-
-                        boolean allowed = true;
-                        if (sourceInfo.hasProtectedLock && !sourceInfo.isAllowed(hopperOwner))
-                                allowed = false;
-                        if (destinationInfo.hasProtectedLock && !destinationInfo.isAllowed(hopperOwner))
-                                allowed = false;
-
-                        if (!allowed)
+                        if (!decision.allowed)
                                 event.setCancelled(true);
 
-                        HopperCache.put(decisionKey, allowed);
+                        if (decision.tagged)
+                                HopperCache.invalidate();
+
+                        HopperCache.put(decisionKey, decision.allowed);
                 } finally {
                         long elapsed = System.nanoTime() - handlerStart;
                         handlerNanos.addAndGet(elapsed);
@@ -146,7 +143,7 @@ public class InventoryMove implements Listener {
                         List<String> allowedPlayers = LOCK_CONTROLLER.getAllAccessors(location);
                         groupLookupNanos.addAndGet(System.nanoTime() - accessStart);
 
-                        Set<String> allowedLower = new HashSet<>();
+                        Set<String> allowedLower = new LinkedHashSet<>();
                         for (String allowedPlayer : allowedPlayers) {
                                 allowedLower.add(allowedPlayer.toLowerCase());
                         }
@@ -208,6 +205,26 @@ public class InventoryMove implements Listener {
                 return holder == null ? "unknown" : holder.getClass().getSimpleName();
         }
 
+        private String tagHopperOnUse(InventoryHolder holder, LockInfo sourceInfo, LockInfo destinationInfo) {
+                String fallbackOwner = sourceInfo.getAnyAllowed();
+                if (fallbackOwner == null)
+                        fallbackOwner = destinationInfo.getAnyAllowed();
+                if (fallbackOwner == null)
+                        fallbackOwner = "SERVER";
+
+                if (holder instanceof Hopper) {
+                        HopperOwnerData.tagHopper(((Hopper) holder).getLocation().getBlock(), fallbackOwner);
+                        return fallbackOwner;
+                }
+
+                if (holder instanceof HopperMinecart) {
+                        HopperOwnerData.tagHopperMinecart((HopperMinecart) holder, fallbackOwner);
+                        return fallbackOwner;
+                }
+
+                return fallbackOwner;
+        }
+
         private static class InventoryContext {
                 private final List<BlockKey> blockKeys;
 
@@ -257,10 +274,17 @@ public class InventoryMove implements Listener {
         private static class LockInfo {
                 private boolean hasProtectedLock;
                 private boolean conflictingOwners;
-                private Set<String> allowedPlayers = new HashSet<>();
+                private Set<String> allowedPlayers = new LinkedHashSet<>();
 
-                private boolean isAllowed(String player) {
-                        return allowedPlayers.contains(player.toLowerCase());
+                private String getAnyAllowed() {
+                        if (allowedPlayers.isEmpty())
+                                return null;
+
+                        return allowedPlayers.iterator().next();
+                }
+
+                private Set<String> getAllowedPlayers() {
+                        return Collections.unmodifiableSet(allowedPlayers);
                 }
         }
 }

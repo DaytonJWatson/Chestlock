@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.watsonllc.chestlock.commands.Commands;
 import com.watsonllc.chestlock.config.Config;
+import com.watsonllc.chestlock.config.ConfigMigration;
 import com.watsonllc.chestlock.config.LocksData;
 import com.watsonllc.chestlock.events.Events;
 import com.watsonllc.chestlock.config.GroupsData;
@@ -22,21 +23,13 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
-        
+
 		String currentVersion = this.getDescription().getVersion();
-		Object currentConfigVersion = (Object) this.getConfig().get("configVersion");
-                Object correctConfigVersion = "1.3.0";
-		
+
 		Config.setup();
-		
-                if(!correctConfigVersion.equals(currentConfigVersion) || currentConfigVersion == null) {
+
+                if (!ConfigMigration.ensureCurrentConfig()) {
                         Events.invalidConfig();
-                        getLogger().severe("#########################################################");
-                        getLogger().severe("#        ChestLock found conflicting configurations     #");
-                        getLogger().severe("#            You NEED to delete your config.yml         #");
-                        getLogger().severe("#                 and GENERATE a NEW one!               #");
-                        getLogger().severe("#         need help? Discord: discord.gg/BGurTEm2nj     #");
-                        getLogger().severe("#########################################################");
                         return;
                 }
 

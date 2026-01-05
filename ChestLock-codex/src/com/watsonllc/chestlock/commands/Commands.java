@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import com.watsonllc.chestlock.Main;
 import com.watsonllc.chestlock.Utils;
 import com.watsonllc.chestlock.commands.admin.Bypass;
+import com.watsonllc.chestlock.commands.admin.TagHoppers;
 import com.watsonllc.chestlock.commands.player.AddOwner;
 import com.watsonllc.chestlock.commands.player.ClaimLock;
 import com.watsonllc.chestlock.commands.player.DestroyLock;
@@ -47,6 +48,9 @@ public class Commands implements CommandExecutor {
                 if(player.hasPermission("chestlock.bypass") || !usePermissions())
                         player.sendMessage(Utils.color("&8/&6chestlock &7bypass"));
 
+                if(player.hasPermission("chestlock.taghoppers") || !usePermissions())
+                        player.sendMessage(Utils.color("&8/&6chestlock &7taghoppers &8<&7SERVER|player&8> &8<&7radius|world&8> [&7minecarts&8]"));
+
                 if(player.hasPermission("chestlock.group.create") || !usePermissions())
                         player.sendMessage(Utils.color("&8/&6chestlock &7group create &8<&7group&8>"));
 
@@ -75,7 +79,7 @@ public class Commands implements CommandExecutor {
                         player.sendMessage(Utils.color("&8/&6chestlock &7group list"));
 		
 		if(usePermissions()) {
-                        List<String> permissions = Arrays.asList("chestlock.add","chestlock.remove","chestlock.claim","chestlock.destroy","chestlock.public","chestlock.bypass","chestlock.group.create","chestlock.group.delete","chestlock.group.invite","chestlock.group.remove","chestlock.group.accept","chestlock.group.decline","chestlock.group.invites","chestlock.group.leave","chestlock.group.list");
+                        List<String> permissions = Arrays.asList("chestlock.add","chestlock.remove","chestlock.claim","chestlock.destroy","chestlock.public","chestlock.bypass","chestlock.group.create","chestlock.group.delete","chestlock.group.invite","chestlock.group.remove","chestlock.group.accept","chestlock.group.decline","chestlock.group.invites","chestlock.group.leave","chestlock.group.list","chestlock.taghoppers");
                         int totalPerms = 0;
                         for(int i=0; i<permissions.size(); i++) {
                                 if(!player.hasPermission(permissions.get(i))) {
@@ -84,7 +88,7 @@ public class Commands implements CommandExecutor {
                         }
 
                         // make sure to increase this when you add commands
-                        if(totalPerms == 15) {
+                        if(totalPerms == 16) {
                                 player.sendMessage(Utils.color("&cYou need a permission manager plugin to use commands! If you dont have a permission manager, you can disable 'usePermissions' in the config.yml"));
                                 player.sendMessage(Utils.color("&6Available permissions&7: &f" + permissions.toString()));
                         }
@@ -98,15 +102,19 @@ public class Commands implements CommandExecutor {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String arg2, String[] args) {
-		if(!(sender instanceof Player)) {
-			Main.instance.getLogger().warning(Config.getString("messages.invalidInstance"));
-			return false;
-		}
-		
-		Player player = (Player) sender;
+                if (!(sender instanceof Player) && (args.length == 0 || !args[0].equalsIgnoreCase("taghoppers"))) {
+                        Main.instance.getLogger().warning(Config.getString("messages.invalidInstance"));
+                        return false;
+                }
+
+                Player player = sender instanceof Player ? (Player) sender : null;
 		
                 if(args.length == 0) {
-                        return helpMenu(player);
+                        return player != null && helpMenu(player);
+                }
+
+                if(args[0].equalsIgnoreCase("taghoppers")) {
+                        return TagHoppers.logic(sender, args);
                 }
 
                 if(args[0].equalsIgnoreCase("group")) {
