@@ -31,7 +31,19 @@ public class Config {
 	}
 	
 	public static String getString(String string) {
-		return Utils.color(Main.instance.getConfig().getString(string));
+		String value = Main.instance.getConfig().getString(string);
+
+		if (value == null)
+			return "";
+
+		if (string.startsWith("messages.")) {
+			String prefix = Main.instance.getConfig().getString("settings.prefix", "");
+
+			if (prefix != null && !prefix.isEmpty() && !value.startsWith(prefix))
+				value = prefix + value;
+		}
+
+		return Utils.color(value);
 	}
 
         public static String getStringRaw(String string) {

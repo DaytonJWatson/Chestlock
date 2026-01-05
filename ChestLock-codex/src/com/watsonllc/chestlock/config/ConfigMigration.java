@@ -39,6 +39,11 @@ public class ConfigMigration {
                         config.set("settings.untagged-hoppers", "ALLOW");
                         Main.instance.saveConfig();
                 }
+
+                if (!config.isSet("settings.prefix")) {
+                        config.set("settings.prefix", "&8[&6ChestLock&8] &7 ");
+                        Main.instance.saveConfig();
+                }
         }
 
         private static void logIncompatibleConfig(Object currentVersion) {
