@@ -40,6 +40,23 @@ public final class ActionMessages {
         }
     }
 
+    public static String getActionBar(PlayerActionType type, String target) {
+        switch (type) {
+        case CLAIM_LOCK:
+            return colorRaw(Config.getStringRaw("messages.actionbarClaim"));
+        case DESTROY_LOCK:
+            return colorRaw(Config.getStringRaw("messages.actionbarDestroy"));
+        case MAKE_PUBLIC:
+            return colorRaw(Config.getStringRaw("messages.actionbarPublic"));
+        case ADD_OWNER:
+            return replaceTarget(colorRaw(Config.getStringRaw("messages.actionbarAddOwner")), target);
+        case REMOVE_OWNER:
+            return replaceTarget(colorRaw(Config.getStringRaw("messages.actionbarRemoveOwner")), target);
+        default:
+            return "";
+        }
+    }
+
     public static String getNextStep(PlayerActionType type, String target) {
         switch (type) {
         case CLAIM_LOCK:
