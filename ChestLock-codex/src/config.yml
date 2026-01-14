@@ -68,6 +68,28 @@ lockables:
   SMOKER: true
   TRAPPED_CHEST: true
 
+lockables-doors:
+  OAK_DOOR: false
+  SPRUCE_DOOR: false
+  BIRCH_DOOR: false
+  JUNGLE_DOOR: false
+  ACACIA_DOOR: false
+  DARK_OAK_DOOR: false
+  MANGROVE_DOOR: false
+  CHERRY_DOOR: false
+  BAMBOO_DOOR: false
+  CRIMSON_DOOR: false
+  WARPED_DOOR: false
+  IRON_DOOR: false
+  COPPER_DOOR: false
+  EXPOSED_COPPER_DOOR: false
+  WEATHERED_COPPER_DOOR: false
+  OXIDIZED_COPPER_DOOR: false
+  WAXED_COPPER_DOOR: false
+  WAXED_EXPOSED_COPPER_DOOR: false
+  WAXED_WEATHERED_COPPER_DOOR: false
+  WAXED_OXIDIZED_COPPER_DOOR: false
+
 messages:
   adjacentToLock: '&7You &ccant &7create locks adjacent to locks you dont own'
   bypassOff: '&7[&6A&7] &cDisabled &7bypass mode'

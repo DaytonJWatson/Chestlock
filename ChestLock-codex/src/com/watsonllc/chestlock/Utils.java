@@ -97,6 +97,46 @@ public class Utils {
 			return Config.getBoolean("lockables.SMOKER");
 		case TRAPPED_CHEST:
 			return Config.getBoolean("lockables.TRAPPED_CHEST");
+		case OAK_DOOR:
+			return Config.getBoolean("lockables-doors.OAK_DOOR");
+		case SPRUCE_DOOR:
+			return Config.getBoolean("lockables-doors.SPRUCE_DOOR");
+		case BIRCH_DOOR:
+			return Config.getBoolean("lockables-doors.BIRCH_DOOR");
+		case JUNGLE_DOOR:
+			return Config.getBoolean("lockables-doors.JUNGLE_DOOR");
+		case ACACIA_DOOR:
+			return Config.getBoolean("lockables-doors.ACACIA_DOOR");
+		case DARK_OAK_DOOR:
+			return Config.getBoolean("lockables-doors.DARK_OAK_DOOR");
+		case MANGROVE_DOOR:
+			return Config.getBoolean("lockables-doors.MANGROVE_DOOR");
+		case CHERRY_DOOR:
+			return Config.getBoolean("lockables-doors.CHERRY_DOOR");
+		case BAMBOO_DOOR:
+			return Config.getBoolean("lockables-doors.BAMBOO_DOOR");
+		case CRIMSON_DOOR:
+			return Config.getBoolean("lockables-doors.CRIMSON_DOOR");
+		case WARPED_DOOR:
+			return Config.getBoolean("lockables-doors.WARPED_DOOR");
+		case IRON_DOOR:
+			return Config.getBoolean("lockables-doors.IRON_DOOR");
+		case COPPER_DOOR:
+			return Config.getBoolean("lockables-doors.COPPER_DOOR");
+		case EXPOSED_COPPER_DOOR:
+			return Config.getBoolean("lockables-doors.EXPOSED_COPPER_DOOR");
+		case WEATHERED_COPPER_DOOR:
+			return Config.getBoolean("lockables-doors.WEATHERED_COPPER_DOOR");
+		case OXIDIZED_COPPER_DOOR:
+			return Config.getBoolean("lockables-doors.OXIDIZED_COPPER_DOOR");
+		case WAXED_COPPER_DOOR:
+			return Config.getBoolean("lockables-doors.WAXED_COPPER_DOOR");
+		case WAXED_EXPOSED_COPPER_DOOR:
+			return Config.getBoolean("lockables-doors.WAXED_EXPOSED_COPPER_DOOR");
+		case WAXED_WEATHERED_COPPER_DOOR:
+			return Config.getBoolean("lockables-doors.WAXED_WEATHERED_COPPER_DOOR");
+		case WAXED_OXIDIZED_COPPER_DOOR:
+			return Config.getBoolean("lockables-doors.WAXED_OXIDIZED_COPPER_DOOR");
 		default:
 			return false;
 		}
